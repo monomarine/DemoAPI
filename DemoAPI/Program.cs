@@ -32,7 +32,7 @@ namespace DemoAPI
 
             app.UseAuthorization();
 
-
+            app.UseMiddleware<TestMiddleware>(); //внедрение польз middleware в конвейер запросов
             app.MapControllers();
 
             app.Run();
