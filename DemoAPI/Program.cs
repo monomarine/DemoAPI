@@ -1,6 +1,8 @@
 
 using DemoAPI.Controllers;
+using DemoAPI.Models;
 using DemoAPI.Services;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace DemoAPI
@@ -17,8 +19,11 @@ namespace DemoAPI
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-            builder.Services.AddSingleton<UsersController>();
-            builder.Services.AddSingleton<IUserRepository, MockUserRepository>(); //регистрация
+
+            builder.Services.AddDbContext<APIDBContect>(options =>
+            options.UseNpgsql(builder.Configuration.GetConnectionString("PostgreConnection")));
+
+            builder.Services.AddScoped<IUserRepository, UserRepository>(); //регистрация
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
