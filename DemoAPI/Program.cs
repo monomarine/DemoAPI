@@ -24,6 +24,8 @@ namespace DemoAPI
             options.UseNpgsql(builder.Configuration.GetConnectionString("PostgreConnection")));
 
             builder.Services.AddScoped<IUserRepository, UserRepository>(); //регистрация
+            builder.Services.AddScoped<IBookRepository, BookRepository>();
+            builder.Services.AddScoped<IAuthorRepository, AuthorRepository>();
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
