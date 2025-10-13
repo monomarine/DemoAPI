@@ -1,4 +1,4 @@
-﻿namespace DemoAPI.Services;
+﻿namespace DemoAPI.Repositories;
 using DemoAPI.Models;
 
 public interface IUserRepository

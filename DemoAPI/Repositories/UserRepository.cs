@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 
-namespace DemoAPI.Services
+namespace DemoAPI.Repositories
 {
     public class UserRepository : IUserRepository
     {

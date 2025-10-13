@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using DemoAPI.Models;
 using System.Collections;
 using Microsoft.AspNetCore.Http.HttpResults;
-using DemoAPI.Services;
+using DemoAPI.Repositories;
 
 namespace DemoAPI.Controllers
 {

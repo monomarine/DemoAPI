@@ -1,7 +1,7 @@
 
 using DemoAPI.Controllers;
 using DemoAPI.Models;
-using DemoAPI.Services;
+using DemoAPI.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 
