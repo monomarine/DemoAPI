@@ -71,7 +71,7 @@ namespace DemoAPI.Services
 
         public bool Delete(int id)
         {
-            
+            return _bookRepo.Delete(id);
         }
 
         public IEnumerable<BookDTO> GetAllbooks()
@@ -88,7 +88,19 @@ namespace DemoAPI.Services
 
         public BookDTO Update(int id, UpdateBookDTO updateBookDTO)
         {
-            
+            var book = _bookRepo.GetById(id);
+            if (book == null) return null;
+
+            if (_authorRepo.Exists(updateBookDTO.AuthorId))
+            {
+                book.Title = updateBookDTO.Title;
+                book.AuthorId = updateBookDTO.AuthorId;
+
+                var updatesbook = _bookRepo.Update(book);
+                return MapBookDTO(updatesbook);
+            }
+            else
+                throw new ArgumentException("автор с таким id не был найден");
         }
     }
 }
