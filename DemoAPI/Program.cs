@@ -2,6 +2,7 @@
 using DemoAPI.Controllers;
 using DemoAPI.Models;
 using DemoAPI.Repositories;
+using DemoAPI.Services;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -26,6 +27,7 @@ namespace DemoAPI
             builder.Services.AddScoped<IUserRepository, UserRepository>(); //регистрация
             builder.Services.AddScoped<IBookRepository, BookRepository>();
             builder.Services.AddScoped<IAuthorRepository, AuthorRepository>();
+            builder.Services.AddScoped<IBookService, BookService>();
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
