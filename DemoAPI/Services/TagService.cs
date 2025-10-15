@@ -4,10 +4,10 @@ using DemoAPI.Repositories;
 
 namespace DemoAPI.Services
 {
-    public class TagServicee : ITagService
+    public class TagService : ITagService
     {
         private readonly ITagRepository _tagRepository;
-        public TagServicee(ITagRepository repo)
+        public TagService(ITagRepository repo)
         {
             _tagRepository = repo;
         }
@@ -38,7 +38,7 @@ namespace DemoAPI.Services
 
         public bool Delete(int id) => _tagRepository.Delete(id);
 
-        public IEnumerable<TagResponseDTO> GetAll() =>
+        public IEnumerable<TagResponseDTO> GetAllTags() =>
             _tagRepository.GetAll().Select(MapToTagDTO);
 
         public TagResponseDTO GetById(int id)
@@ -48,7 +48,7 @@ namespace DemoAPI.Services
             return tag == null ? null : MapToTagDTO(tag);
         }
 
-        public TagResponseDTO Update(int id, CreateTagDTO updatetagDTO)
+        public TagResponseDTO Update(int id, UpdateTagDTO updatetagDTO)
         {
             var tag = _tagRepository.GetById(id);
             if (tag == null) return null;
