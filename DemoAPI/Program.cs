@@ -24,10 +24,17 @@ namespace DemoAPI
             builder.Services.AddDbContext<APIDBContect>(options =>
             options.UseNpgsql(builder.Configuration.GetConnectionString("PostgreConnection")));
 
-            builder.Services.AddScoped<IUserRepository, UserRepository>(); //регистрация
-            builder.Services.AddScoped<IBookRepository, BookRepository>();
+            // Регистрация репозиториев
             builder.Services.AddScoped<IAuthorRepository, AuthorRepository>();
+            builder.Services.AddScoped<IBookRepository, BookRepository>();
+            builder.Services.AddScoped<IPostRepository, PostRepository>();
+            builder.Services.AddScoped<ITagRepository, TagRepository>();
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
+
+            // Регистрация сервисов
             builder.Services.AddScoped<IBookService, BookService>();
+            builder.Services.AddScoped<IPostService, PostService>();
+            builder.Services.AddScoped<ITagService, TagServicee>();
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
