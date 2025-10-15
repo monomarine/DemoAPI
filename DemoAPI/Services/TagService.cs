@@ -4,10 +4,10 @@ using DemoAPI.Repositories;
 
 namespace DemoAPI.Services
 {
-    public class TagServicee : ITagService
+    public class TagService : ITagService
     {
         private readonly ITagRepository _tagRepository;
-        public TagServicee(ITagRepository repo)
+        public TagService(ITagRepository repo)
         {
             _tagRepository = repo;
         }

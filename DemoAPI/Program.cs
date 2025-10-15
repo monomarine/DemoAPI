@@ -22,12 +22,19 @@ namespace DemoAPI
             builder.Services.AddSwaggerGen();
 
             builder.Services.AddDbContext<APIDBContect>(options =>
-            options.UseNpgsql(builder.Configuration.GetConnectionString("PostgreConnection")));
+            options.UseNpgsql(builder.Configuration.GetConnectionString("PostgresConnection"))); //РёР·РјРµРЅРёР»Р°
 
-            builder.Services.AddScoped<IUserRepository, UserRepository>(); //регистрация
+            builder.Services.AddScoped<IUserRepository, UserRepository>(); //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+            
             builder.Services.AddScoped<IBookRepository, BookRepository>();
             builder.Services.AddScoped<IAuthorRepository, AuthorRepository>();
             builder.Services.AddScoped<IBookService, BookService>();
+            
+            builder.Services.AddScoped<IPostRepository, PostRepository>();
+            builder.Services.AddScoped<ITagRepository, TagRepository>();
+            builder.Services.AddScoped<IPostService, PostService>();
+            builder.Services.AddScoped<ITagService, TagService>();
+            
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -41,7 +48,7 @@ namespace DemoAPI
 
             app.UseAuthorization();
 
-            app.UseMiddleware<TestMiddleware>(); //внедрение польз middleware в конвейер запросов
+            app.UseMiddleware<TestMiddleware>(); //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ middleware пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
             app.MapControllers();
 
             app.Run();
