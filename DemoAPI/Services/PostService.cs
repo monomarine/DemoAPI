@@ -17,21 +17,22 @@ namespace DemoAPI.Services
 
         private static PostResponseDTO MapToPostDTO(Post post)
         {
-            return new PostResponseDTO
-            {
-                Id = post.Id,
-                Title = post.Title,
-                CreatedAt = post.CreatedAt,
-                Content = post.Content,
-                UpdatedAt = post.UpdatedAt,
-                Tags = post.Tags.Select(t => new TagResponseDTO
+                return new PostResponseDTO
                 {
-                    Id = t.Id,
-                    Name = t.Name,
-                    Description = t.Description
-                })
-                .ToList()
-            };
+                    Id = post.Id,
+                    Title = post.Title,
+                    CreatedAt = post.CreatedAt,
+                    Content = post.Content,
+                    UpdatedAt = post.UpdatedAt,
+                    Tags = post.Tags.Select(t => new TagResponseDTO
+                    {
+                        Id = t.Id,
+                        Name = t.Name,
+                        Description = t.Description
+                    })
+              .ToList()
+                };
+          
         }
 
         public PostResponseDTO Create(CreatePostDTO createPostDTO)
@@ -59,8 +60,14 @@ namespace DemoAPI.Services
             return posts.Select(MapToPostDTO);
         }
 
-        public PostResponseDTO GetById(int id) =>
-            MapToPostDTO(_postRepository.GetById(id));
+        public PostResponseDTO GetById(int id)
+        {
+            var post = _postRepository.GetById(id);
+            if (post != null) return MapToPostDTO(_postRepository.GetById(id));
+            else throw new ArgumentException("такого поста не существует");
+
+        }
+            
 
 
         public PostResponseDTO Update(int id, UpdatePostDTO updatePostDTO)

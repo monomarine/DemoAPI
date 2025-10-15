@@ -27,7 +27,13 @@ namespace DemoAPI
             builder.Services.AddScoped<IUserRepository, UserRepository>(); //регистрация
             builder.Services.AddScoped<IBookRepository, BookRepository>();
             builder.Services.AddScoped<IAuthorRepository, AuthorRepository>();
+            builder.Services.AddScoped<ITagRepository, TagRepository>();
+            builder.Services.AddScoped<IPostRepository, PostRepository>();
+
             builder.Services.AddScoped<IBookService, BookService>();
+            builder.Services.AddScoped<ITagService, TagService>();
+            builder.Services.AddScoped<IPostService, PostService>();
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
