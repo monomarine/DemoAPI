@@ -4,10 +4,10 @@ namespace DemoAPI.Services
 {
     public interface ITagService
     {
-        IEnumerable<TagResponseDTO> GetAll();
+        IEnumerable<TagResponseDTO> GetAllTags();
         TagResponseDTO GetById(int id);
         TagResponseDTO Create(CreateTagDTO createTagDTO);
-        TagResponseDTO Update(int id, CreateTagDTO updatetagDTO);
+        TagResponseDTO Update(int id, UpdateTagDTO updatetagDTO);
         bool Delete(int id);
     }
 }
