@@ -22,7 +22,7 @@ namespace DemoAPI
             builder.Services.AddSwaggerGen();
 
             builder.Services.AddDbContext<APIDBContect>(options =>
-            options.UseNpgsql(builder.Configuration.GetConnectionString("PostgreConnection")));
+            options.UseNpgsql(builder.Configuration.GetConnectionString("PostgreûConnection")));
 
             builder.Services.AddScoped<IUserRepository, UserRepository>(); //ðåãèñòðàöèÿ
             builder.Services.AddScoped<IBookRepository, BookRepository>();
