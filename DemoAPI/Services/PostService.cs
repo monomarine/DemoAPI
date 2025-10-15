@@ -17,20 +17,22 @@ namespace DemoAPI.Services
 
         private static PostResponseDTO MapToPostDTO(Post post)
         {
+            if (post == null)
+                return null;
+
             return new PostResponseDTO
             {
                 Id = post.Id,
                 Title = post.Title,
-                CreatedAt = post.CreatedAt,
                 Content = post.Content,
+                CreatedAt = post.CreatedAt,
                 UpdatedAt = post.UpdatedAt,
-                Tags = post.Tags.Select(t => new TagResponseDTO
+                Tags = post.Tags?.Select(t => new TagResponseDTO
                 {
                     Id = t.Id,
                     Name = t.Name,
                     Description = t.Description
-                })
-                .ToList()
+                })?.ToList() ?? new List<TagResponseDTO>() //защита от null
             };
         }
 
