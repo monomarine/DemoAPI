@@ -34,6 +34,56 @@ namespace DemoAPI.Services
             };
         }
 
+        public PostResponseDTO Create(CreatePostDTO createPostDTO)
+        {
+            if (_postRepository.PostExists(createPostDTO.Title))
+                throw new ArgumentException($"Пост с именем {createPostDTO.Title} уже существует");
+
+            var newPost = new Post
+            {
+                Title = createPostDTO.Title,
+                Content = createPostDTO.Content,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            ProcessTagsForPost(newPost, createPostDTO.TagIds, createPostDTO.NewTags);
+            var createdPos = _postRepository.Create(newPost);
+            return MapToPostDTO(createdPos);
+        }
+
+        public bool Delete(int id)=>  _postRepository.Delete(id);
+
+        public IEnumerable<PostResponseDTO> GetAllPosts()
+        {
+            var posts = _postRepository.GetAll();
+            return posts.Select(MapToPostDTO);
+        }
+
+        public PostResponseDTO GetById(int id) =>
+            MapToPostDTO(_postRepository.GetById(id));
+
+
+        public PostResponseDTO Update(int id, UpdatePostDTO updatePostDTO)
+        {
+            var post = _postRepository.GetById(id);
+            if (post == null) return null;
+
+            if (post.Title != updatePostDTO.Title &&
+                _postRepository.PostExists(updatePostDTO.Title))
+                throw new ArgumentException($"пост с заголовком {updatePostDTO.Title}" +
+                    $"уже существует");
+
+            post.Title = updatePostDTO.Title;
+            post.Content = updatePostDTO.Content;
+            post.UpdatedAt = DateTime.UtcNow;
+
+            post.Tags.Clear();
+            ProcessTagsForPost(post, updatePostDTO.TagIds, null);
+
+            var updatesPost = _postRepository.Update(post);
+            return MapToPostDTO(updatesPost);
+        }
+
         private void ProcessTagsForPost(Post post, 
                                     List<int>? tagsIds,
                                     List<CreateTagDTO>? newTags)
@@ -73,7 +123,7 @@ namespace DemoAPI.Services
                     }
                 }
             }
-
+            //добавляются теги к посту
             foreach (var tag in tagsToAdd)
                 post.Tags.Add(tag);
         }
