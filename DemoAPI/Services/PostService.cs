@@ -17,6 +17,9 @@ namespace DemoAPI.Services
 
         private static PostResponseDTO MapToPostDTO(Post post)
         {
+            if (post == null)
+                return null;
+
             return new PostResponseDTO
             {
                 Id = post.Id,
