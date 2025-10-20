@@ -1,4 +1,5 @@
-﻿using DemoAPI.Models.DTO;
+﻿using AutoMapper;
+using DemoAPI.Models.DTO;
 using DemoAPI.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -11,20 +12,22 @@ namespace DemoAPI.Controllers
     public class BooksController : ControllerBase
     {
         private readonly IBookService _service;
-        public BooksController(IBookService service)
+        private readonly IMapper _mapper;
+        public BooksController(IBookService service, IMapper mapper)
         {
             _service = service;
+            _mapper = mapper;
         }
         [HttpGet]
         public ActionResult<IEnumerable<BookDTO>> GetAll() =>
-            Ok(_service.GetAllbooks().ToList());
+            Ok(_mapper.Map<IEnumerable<BookDTO>>(_service.GetAllbooks()));
 
         [HttpGet("{id}")]
         public ActionResult<BookDTO> GetById(int id)
         {
             var book = _service.GetById(id);
             if (book == null) return NotFound();
-            return Ok(book);
+            return Ok(_mapper.Map<BookDTO>(book));
         }
         [HttpPost]
         public ActionResult<BookDTO> CreateBook([FromBody] CreateBookDTO createBookDTO)
@@ -32,7 +35,7 @@ namespace DemoAPI.Controllers
             try
             {
                 var book = _service.Create(createBookDTO);
-                return CreatedAtAction(nameof(GetById), new { id = book.Id }, book);
+                return CreatedAtAction(nameof(GetById), new { id = book.Id }, _mapper.Map<BookDTO>(book));
             }
             catch (ArgumentException ex)
             {
@@ -47,7 +50,7 @@ namespace DemoAPI.Controllers
             {
                 var updateBook = _service.Update(id, updateBookDTO);
                 if (updateBook == null) return NotFound();
-                return Ok(updateBook);
+                return Ok(_mapper.Map<BookDTO>(updateBook));
             }
             catch(ArgumentException ex)
             {

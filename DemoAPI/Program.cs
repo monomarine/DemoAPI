@@ -1,9 +1,12 @@
-
+using DemoAPI;
+using DemoAPI.MappingProfiles;
+using DemoAPI.Middleware;
 using DemoAPI.Controllers;
 using DemoAPI.Models;
 using DemoAPI.Repositories;
 using DemoAPI.Services;
 using Microsoft.EntityFrameworkCore;
+using AutoMapper;
 
 
 namespace DemoAPI
@@ -14,12 +17,21 @@ namespace DemoAPI
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
-
             builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            builder.Services.AddSingleton<IMapper>(_ =>
+            {
+                var configuration = new MapperConfiguration(cfg =>
+                {
+                    cfg.AddProfile<AuthorProfile>();
+                    cfg.AddProfile<BookProfile>();
+                    cfg.AddProfile<PostProfile>();
+                    cfg.AddProfile<TagProfile>();
+                });
+                return configuration.CreateMapper();
+            });
 
             builder.Services.AddDbContext<APIDBContect>(options =>
             options.UseNpgsql(builder.Configuration.GetConnectionString("PostgreConnection")));
@@ -28,9 +40,12 @@ namespace DemoAPI
             builder.Services.AddScoped<IBookRepository, BookRepository>();
             builder.Services.AddScoped<IAuthorRepository, AuthorRepository>();
             builder.Services.AddScoped<IBookService, BookService>();
+            builder.Services.AddScoped<IPostRepository, PostRepository>();
+            builder.Services.AddScoped<ITagRepository, TagRepository>();
+            builder.Services.AddScoped<IPostService, PostService>();
+            builder.Services.AddScoped<ITagService, TagServicee>();
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
@@ -38,6 +53,8 @@ namespace DemoAPI
             }
 
             app.UseHttpsRedirection();
+
+            app.UseMiddleware<ExceptionHandlerMiddleware>();
 
             app.UseAuthorization();
 
