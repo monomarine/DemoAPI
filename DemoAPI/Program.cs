@@ -1,8 +1,11 @@
+using AutoMapper;
 using DemoAPI.Controllers;
 using DemoAPI.Models;
 using DemoAPI.Repositories;
 using DemoAPI.Services;
 using Microsoft.EntityFrameworkCore;
+using DemoAPI.Profiles;
+using System.Reflection.Metadata.Ecma335;
 
 namespace DemoAPI
 {
@@ -14,6 +17,18 @@ namespace DemoAPI
 
             // Add services to the container.
             builder.Services.AddControllers();
+
+            ILoggerFactory factory = new LoggerFactory();
+            builder.Services.AddSingleton<IMapper>(_ =>
+            {
+                var configuration = new MapperConfiguration(cfg =>
+                {
+                    cfg.AddProfile<AuthorProfile>();
+                },
+                factory);
+                return configuration.CreateMapper();
+            });
+
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();

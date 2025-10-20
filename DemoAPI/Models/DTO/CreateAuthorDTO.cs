@@ -1,9 +1,15 @@
-﻿namespace DemoAPI.Models.DTO
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace DemoAPI.Models.DTO
 {
     public class CreateAuthorDTO
     {
+        [Required(ErrorMessage = "Имя автора обязательно")]
+        [StringLength(100, MinimumLength = 2, ErrorMessage = "Имя автора должно быть от 2 до 100 символов")]
         public string Name { get; set; } = null!;
-        public string Alias { get; set; } = string.Empty;
+
+        [StringLength(50, ErrorMessage = "Псевдоним не должен превышать 50 символов")]
+        public string Alias { get; set; } = String.Empty;
     }
 
 }

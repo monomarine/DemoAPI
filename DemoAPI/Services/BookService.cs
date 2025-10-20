@@ -43,12 +43,12 @@ namespace DemoAPI.Services
                     throw new ArgumentException("Автор не найден");
                 authorID = existingAuthor.Id;
             }
-            else if (createBookDTO.newAuthor != null) //создаем автора вместе с книгйо
+            else if (createBookDTO.NewAuthor != null) //создаем автора вместе с книгйо
             {
                 var newAuthor = new Author
                 {
-                    Name = createBookDTO.newAuthor.Name,
-                    Alias = createBookDTO.newAuthor.Alias
+                    Name = createBookDTO.NewAuthor.Name,
+                    Alias = createBookDTO.NewAuthor.Alias
                 };
 
                 var createdAuthor = _authorRepo.Create(newAuthor);
