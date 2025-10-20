@@ -1,4 +1,5 @@
-﻿using DemoAPI.Models.DTO;
+﻿using AutoMapper;
+using DemoAPI.Models.DTO;
 using DemoAPI.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -11,13 +12,16 @@ namespace DemoAPI.Controllers
     public class BooksController : ControllerBase
     {
         private readonly IBookService _service;
-        public BooksController(IBookService service)
+        private readonly IMapper _mapper;
+        public BooksController(IBookService service, IMapper mapper)
         {
             _service = service;
+            _mapper = mapper;
         }
         [HttpGet]
         public ActionResult<IEnumerable<BookDTO>> GetAll() =>
             Ok(_service.GetAllbooks().ToList());
+
 
         [HttpGet("{id}")]
         public ActionResult<BookDTO> GetById(int id)
