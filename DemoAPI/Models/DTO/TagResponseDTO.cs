@@ -1,9 +1,16 @@
-﻿namespace DemoAPI.Models.DTO
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace DemoAPI.Models.DTO
 {
     public class TagResponseDTO
     {
         public int Id { get; set; }
+
+        [Required(ErrorMessage = "Название тега обязательно")]
+        [StringLength(50, MinimumLength = 1, ErrorMessage = "Название тега должно быть от 1 до 50 символов")]
         public string Name { get; set; } = null!;
+
+        [StringLength(200, ErrorMessage = "Описание тега должно быть до 200 символов")]
         public string? Description { get; set; }
     }
 }

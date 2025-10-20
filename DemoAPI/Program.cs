@@ -1,10 +1,11 @@
-
-using DemoAPI.Controllers;
+п»їusing DemoAPI.Controllers;
 using DemoAPI.Models;
 using DemoAPI.Repositories;
 using DemoAPI.Services;
 using Microsoft.EntityFrameworkCore;
-
+using AutoMapper; 
+using DemoAPI.Profiles; 
+using Microsoft.Extensions.Logging; 
 
 namespace DemoAPI
 {
@@ -14,23 +15,40 @@ namespace DemoAPI
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
-
+            
             builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+            
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
             builder.Services.AddDbContext<APIDBContect>(options =>
             options.UseNpgsql(builder.Configuration.GetConnectionString("PostgreConnection")));
 
-            builder.Services.AddScoped<IUserRepository, UserRepository>(); //регистрация
+           
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IBookRepository, BookRepository>();
             builder.Services.AddScoped<IAuthorRepository, AuthorRepository>();
             builder.Services.AddScoped<IBookService, BookService>();
+
+        
+            LoggerFactory factory = new LoggerFactory();
+
+            builder.Services.AddSingleton<IMapper>(_ =>
+            {
+                var configuration = new MapperConfiguration(cfg =>
+                {
+                    cfg.AddProfile<AuthorProfile>();
+                    cfg.AddProfile<BookProfile>(); 
+                    cfg.AddProfile<PostProfile>(); 
+                    cfg.AddProfile<TagProfile>();  
+                },
+                factory);
+                return configuration.CreateMapper();
+            });
+
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
+            
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
@@ -38,12 +56,9 @@ namespace DemoAPI
             }
 
             app.UseHttpsRedirection();
-
             app.UseAuthorization();
-
-            app.UseMiddleware<TestMiddleware>(); //внедрение польз middleware в конвейер запросов
+            app.UseMiddleware<TestMiddleware>();
             app.MapControllers();
-
             app.Run();
         }
     }
