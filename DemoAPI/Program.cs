@@ -1,4 +1,5 @@
 
+using AutoMapper;
 using DemoAPI.Controllers;
 using DemoAPI.Models;
 using DemoAPI.Repositories;
@@ -23,7 +24,16 @@ namespace DemoAPI
 
             builder.Services.AddDbContext<APIDBContect>(options =>
             options.UseNpgsql(builder.Configuration.GetConnectionString("PostgreConnection")));
+            ILoggerFactory loggerFactory = new LoggerFactory();
+            builder.Services.AddSingleton<IMapper>(_ =>
+            {
+                var configuration = new MapperConfiguration(cfg =>
+                {
+                    cfg.AddProfile<AuthorProfile>();
+                });
 
+                return configuration.CreateMapper();
+            });
             builder.Services.AddScoped<IUserRepository, UserRepository>(); //регистрация
             builder.Services.AddScoped<IBookRepository, BookRepository>();
             builder.Services.AddScoped<IAuthorRepository, AuthorRepository>();
