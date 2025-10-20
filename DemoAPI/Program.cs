@@ -1,6 +1,8 @@
 
+using AutoMapper;
 using DemoAPI.Controllers;
 using DemoAPI.Models;
+using DemoAPI.Profiles;
 using DemoAPI.Repositories;
 using DemoAPI.Services;
 using Microsoft.EntityFrameworkCore;
@@ -31,10 +33,20 @@ namespace DemoAPI
             builder.Services.AddScoped<ITagRepository, TagRepository>();
             builder.Services.AddScoped<IUserRepository, UserRepository>();
 
+            ILoggerFactory factory = new LoggerFactory();
+
             // Регистрация сервисов
             builder.Services.AddScoped<IBookService, BookService>();
             builder.Services.AddScoped<IPostService, PostService>();
             builder.Services.AddScoped<ITagService, TagServicee>();
+            builder.Services.AddSingleton<IMapper>(_ =>
+            {
+                var configuration = new MapperConfiguration(cfg =>
+                {
+                    cfg.AddProfile<AuthorProfile>();
+                }, factory);
+                return configuration.CreateMapper();
+            });
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
