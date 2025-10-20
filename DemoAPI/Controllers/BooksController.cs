@@ -2,6 +2,7 @@
 using DemoAPI.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using AutoMapper; 
 using System.Runtime.CompilerServices;
 
 namespace DemoAPI.Controllers
@@ -11,28 +12,40 @@ namespace DemoAPI.Controllers
     public class BooksController : ControllerBase
     {
         private readonly IBookService _service;
-        public BooksController(IBookService service)
+        private readonly IMapper _mapper; 
+
+        public BooksController(IBookService service, IMapper mapper) 
         {
             _service = service;
+            _mapper = mapper;
         }
+
         [HttpGet]
-        public ActionResult<IEnumerable<BookDTO>> GetAll() =>
-            Ok(_service.GetAllbooks().ToList());
+        public ActionResult<IEnumerable<BookDTO>> GetAll()
+        {
+            var books = _service.GetAllbooks();
+            var bookDtos = _mapper.Map<IEnumerable<BookDTO>>(books); 
+            return Ok(bookDtos.ToList());
+        }
 
         [HttpGet("{id}")]
         public ActionResult<BookDTO> GetById(int id)
         {
             var book = _service.GetById(id);
             if (book == null) return NotFound();
-            return Ok(book);
+
+            var bookDto = _mapper.Map<BookDTO>(book); 
+            return Ok(bookDto);
         }
+
         [HttpPost]
         public ActionResult<BookDTO> CreateBook([FromBody] CreateBookDTO createBookDTO)
         {
             try
             {
                 var book = _service.Create(createBookDTO);
-                return CreatedAtAction(nameof(GetById), new { id = book.Id }, book);
+                var bookDto = _mapper.Map<BookDTO>(book); 
+                return CreatedAtAction(nameof(GetById), new { id = bookDto.Id }, bookDto);
             }
             catch (ArgumentException ex)
             {
@@ -41,19 +54,22 @@ namespace DemoAPI.Controllers
         }
 
         [HttpPut("{id}")]
-        public ActionResult<BookDTO> Update(int id,[FromBody] UpdateBookDTO updateBookDTO)
+        public ActionResult<BookDTO> Update(int id, [FromBody] UpdateBookDTO updateBookDTO)
         {
             try
             {
                 var updateBook = _service.Update(id, updateBookDTO);
                 if (updateBook == null) return NotFound();
-                return Ok(updateBook);
+
+                var bookDto = _mapper.Map<BookDTO>(updateBook); 
+                return Ok(bookDto);
             }
-            catch(ArgumentException ex)
+            catch (ArgumentException ex)
             {
                 return BadRequest(ex.Message);
             }
         }
+
         [HttpDelete("{id}")]
         public ActionResult Delete(int id)
         {
