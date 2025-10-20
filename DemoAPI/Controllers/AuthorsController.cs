@@ -4,6 +4,7 @@ using DemoAPI.Repositories;
 using DemoAPI.Models;
 using DemoAPI.Models.DTO;
 using System.Reflection.Metadata.Ecma335;
+using AutoMapper;
 
 namespace DemoAPI.Controllers
 {
@@ -12,25 +13,27 @@ namespace DemoAPI.Controllers
     public class AuthorsController : ControllerBase
     {
         private readonly IAuthorRepository _authorRepository;
-        public AuthorsController (IAuthorRepository authorRepository)
+        private readonly IMapper _mapper;
+        public AuthorsController (IAuthorRepository authorRepository, IMapper mapper)
         {
             _authorRepository = authorRepository;
+            _mapper = mapper;
         }
-        private static AuthorDTO MapAuthorDTO(Author author)
-        {
-            return new AuthorDTO
-            {
-                Id = author.Id,
-                Name = author.Name,
-                Alias = author.Alias,
-            };
-        }
+        //private static AuthorDTO MapAuthorDTO(Author author)
+        //{
+        //    return new AuthorDTO
+        //    {
+        //        Id = author.Id,
+        //        Name = author.Name,
+        //        Alias = author.Alias,
+        //    };
+        //}
 
         [HttpGet]
         public ActionResult<IEnumerable<AuthorDTO>> GetAuthors()
         {
             var authors = _authorRepository.GetAll();
-            var authorsDTO = authors.Select(MapAuthorDTO);
+            var authorsDTO = _mapper.Map<IEnumerable<AuthorDTO>>(authors);
             return Ok(authorsDTO);
         }
 
@@ -40,7 +43,7 @@ namespace DemoAPI.Controllers
             var author = _authorRepository.GetById(id);
             if (author == null) return NotFound();
 
-            return Ok(MapAuthorDTO(author));
+            return Ok(_mapper.Map<AuthorDTO>(author));
         }
 
         [HttpPost]
@@ -54,7 +57,7 @@ namespace DemoAPI.Controllers
 
             var createdAuthor = _authorRepository.Create(author);
 
-            return CreatedAtAction(nameof(GetAuthorById), new { id = createdAuthor.Id }, MapAuthorDTO(createdAuthor));
+            return CreatedAtAction(nameof(GetAuthorById), new { id = createdAuthor.Id }, _mapper.Map<AuthorDTO>(createdAuthor));
         }
 
         [HttpPut("{id}")]
@@ -69,7 +72,7 @@ namespace DemoAPI.Controllers
 
             var updatedAuthor = _authorRepository.Update(author);
 
-            return Ok(MapAuthorDTO(updatedAuthor));
+            return Ok(_mapper.Map<IEnumerable<AuthorDTO>>(updatedAuthor));
         }
 
         [HttpDelete("{id}")]
