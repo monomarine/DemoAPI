@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using DemoAPI.Services;
 using DemoAPI.Models;
 using DemoAPI.Models.DTO;
+using AutoMapper;
 
 namespace DemoAPI.Controllers
 {
@@ -11,17 +12,20 @@ namespace DemoAPI.Controllers
     public class PostsController : ControllerBase
     {
         private readonly IPostService _postService;
+        private readonly IMapper _mapper;
 
-        public PostsController(IPostService postService)
+        public PostsController(IPostService postService, IMapper mapper)
         {
             _postService = postService;
+            _mapper = mapper;
         }
 
         [HttpGet]
         public ActionResult<IEnumerable<PostResponseDTO>> GetAllPosts()
         {
             var posts = _postService.GetAllPosts();
-            return Ok(posts);
+            var postDTO = _mapper.Map<IEnumerable<PostResponseDTO>>(posts); 
+            return Ok(postDTO);
         }
 
         [HttpGet("{id}")]
@@ -32,7 +36,7 @@ namespace DemoAPI.Controllers
             if (post == null)
                 return NotFound();
 
-            return Ok(post);
+            return Ok(_mapper.Map<PostResponseDTO>(post));
         }
 
         [HttpPost]
@@ -41,7 +45,7 @@ namespace DemoAPI.Controllers
             try
             {
                 var createdPost = _postService.Create(createPostDTO);
-                return CreatedAtAction(nameof(GetPostById), new { id = createdPost.Id }, createdPost);
+                return CreatedAtAction(nameof(GetPostById), new { id = createdPost.Id }, _mapper.Map<PostResponseDTO>(createdPost));
             }
             catch (ArgumentException ex)
             {
@@ -59,7 +63,7 @@ namespace DemoAPI.Controllers
                 if (updatedPost == null)
                     return NotFound();
 
-                return Ok(updatedPost);
+                return Ok(_mapper.Map<PostResponseDTO>(updatedPost));
             }
             catch (ArgumentException ex)
             {

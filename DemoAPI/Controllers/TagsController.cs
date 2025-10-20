@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using DemoAPI.Services;
 using DemoAPI.Models;
 using DemoAPI.Models.DTO;
+using AutoMapper;
 
 namespace DemoAPI.Controllers
 {
@@ -11,17 +12,20 @@ namespace DemoAPI.Controllers
     public class TagsController : ControllerBase
     {
         private readonly ITagService _tagService;
+        private readonly IMapper _mapper;
 
-        public TagsController(ITagService tagService)
+        public TagsController(ITagService tagService, IMapper mapper)
         {
             _tagService = tagService;
+            _mapper = mapper;
         }
 
         [HttpGet]
         public ActionResult<IEnumerable<TagResponseDTO>> GetAllTags()
         {
             var tags = _tagService.GetAll();
-            return Ok(tags);
+            var tagDTO = _mapper.Map<IEnumerable<TagResponseDTO>>(tags); 
+            return Ok(tagDTO);
         }
 
         [HttpGet("{id}")]
@@ -32,7 +36,7 @@ namespace DemoAPI.Controllers
             if (tag == null)
                 return NotFound();
 
-            return Ok(tag);
+            return Ok(_mapper.Map<TagResponseDTO>(tag));
         }
 
         [HttpPost]
@@ -41,7 +45,7 @@ namespace DemoAPI.Controllers
             try
             {
                 var createdTag = _tagService.Create(createTagDTO);
-                return CreatedAtAction(nameof(GetTagById), new { id = createdTag.Id }, createdTag);
+                return CreatedAtAction(nameof(GetTagById), new { id = createdTag.Id }, _mapper.Map<TagResponseDTO>(createdTag));
             }
             catch (ArgumentException ex)
             {
@@ -59,7 +63,7 @@ namespace DemoAPI.Controllers
                 if (updatedTag == null)
                     return NotFound();
 
-                return Ok(updatedTag);
+                return Ok(_mapper.Map<TagResponseDTO>(updatedTag));
             }
             catch (ArgumentException ex)
             {
