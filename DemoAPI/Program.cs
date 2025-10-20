@@ -1,4 +1,4 @@
-
+using AutoMapper;
 using DemoAPI.Controllers;
 using DemoAPI.Models;
 using DemoAPI.Repositories;
@@ -22,12 +22,29 @@ namespace DemoAPI
             builder.Services.AddSwaggerGen();
 
             builder.Services.AddDbContext<APIDBContect>(options =>
-            options.UseNpgsql(builder.Configuration.GetConnectionString("PostgreConnection")));
+            options.UseNpgsql(builder.Configuration.GetConnectionString("PostgresConnection")));
+            ILoggerFactory factory = new LoggerFactory();
 
-            builder.Services.AddScoped<IUserRepository, UserRepository>(); //регистрация
+            builder.Services.AddSingleton<IMapper>(_ =>
+            {
+                var configuration = new MapperConfiguration(cfg =>
+                {
+                    cfg.AddProfile<AuthorProfile>();
+                });
+
+                return configuration.CreateMapper();
+            });
+            builder.Services.AddScoped<IUserRepository, UserRepository>(); //регистрация репозиториев
             builder.Services.AddScoped<IBookRepository, BookRepository>();
             builder.Services.AddScoped<IAuthorRepository, AuthorRepository>();
-            builder.Services.AddScoped<IBookService, BookService>();
+            builder.Services.AddScoped<ITagRepository, TagRepository>();
+            builder.Services.AddScoped<IPostRepository, PostRepository>();
+
+
+            builder.Services.AddScoped<IBookService, BookService>(); //регистрация сервисов
+            builder.Services.AddScoped<ITagService, TagServicee>();
+            builder.Services.AddScoped<IPostService, PostService>();
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
