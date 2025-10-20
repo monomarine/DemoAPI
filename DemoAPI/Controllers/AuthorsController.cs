@@ -1,8 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using DemoAPI.Repositories;
+﻿using AutoMapper;
 using DemoAPI.Models;
 using DemoAPI.Models.DTO;
+using DemoAPI.Repositories;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using System.Reflection.Metadata.Ecma335;
 
 namespace DemoAPI.Controllers
@@ -12,6 +13,13 @@ namespace DemoAPI.Controllers
     public class AuthorsController : ControllerBase
     {
         private readonly IAuthorRepository _authorRepository;
+        private readonly IMapper _mapper;
+
+        public AuthorsController(IAuthorRepository authorRepository, IMapper mapper)
+        {
+            _authorRepository = authorRepository;
+            _mapper = mapper;
+        }
         public AuthorsController (IAuthorRepository authorRepository)
         {
             _authorRepository = authorRepository;
@@ -30,8 +38,8 @@ namespace DemoAPI.Controllers
         public ActionResult<IEnumerable<AuthorDTO>> GetAuthors()
         {
             var authors = _authorRepository.GetAll();
-            var authorsDTO = authors.Select(MapAuthorDTO);
-            return Ok(authorsDTO);
+            var authorsDTOs = _mapper.Map<IEnumerable<AuthorDTO>>(authors);
+            return Ok(authorsDTOs);
         }
 
         [HttpGet("{id}")]
@@ -80,6 +88,8 @@ namespace DemoAPI.Controllers
                 return Ok();
             return NotFound();
         }
+        
+        
 
     }
 }
