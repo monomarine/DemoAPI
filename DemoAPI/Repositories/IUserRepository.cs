@@ -7,4 +7,5 @@ public interface IUserRepository
     User AddUser(User user);
     bool DeleteUser(int id);
     User UpdateUser(int id, User user);
+    User ExistUser(string loginOrEmail);
 }

@@ -30,6 +30,18 @@ namespace DemoAPI.Repositories
             else return false;
 
         }
+
+        public User ExistUser(string loginOrEmail)
+        {
+            var user = _context.Users.FirstOrDefault(u =>
+            u.Login == loginOrEmail ||
+            u.Email == loginOrEmail);
+
+            if (user != null)
+                return user;
+            else throw new NullReferenceException("Пользователь не найден");
+        }
+
         public User GetUserById(int id)
         {
             var user = _context.Users.FirstOrDefault(u =>

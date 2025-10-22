@@ -74,7 +74,7 @@ namespace DemoAPI
             }
 
             app.UseHttpsRedirection();
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseMiddleware<TestMiddleware>(); //внедрение польз middleware в конвейер запросов
