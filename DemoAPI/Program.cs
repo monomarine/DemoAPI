@@ -3,7 +3,10 @@ using DemoAPI.Controllers;
 using DemoAPI.Models;
 using DemoAPI.Repositories;
 using DemoAPI.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 
 namespace DemoAPI
@@ -15,6 +18,39 @@ namespace DemoAPI
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
+
+            // сделать конфигурацию jwt
+            builder.Services.Configure<JwtConfiguration>(
+                builder.Configuration.GetSection("Jwt"));
+
+            // настроить систему аутентификации
+            var jwtSettings = builder.Configuration.GetSection("Jwt").Get<JwtConfiguration>();
+            var secretKey = Encoding.ASCII.GetBytes(jwtSettings.SecretKey);
+
+            builder.Services.AddAuthentication(opt =>
+            {
+                opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+
+            })
+                .AddJwtBearer(opt =>
+                {
+                    opt.RequireHttpsMetadata = false;
+                    opt.SaveToken = true;
+                    opt.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+                    {
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(secretKey),
+                        ValidateIssuer = true,
+                        ValidIssuer = jwtSettings.Issuer,
+                        ValidateAudience = true,
+                        ValidAudience = jwtSettings.Audience,
+                        ValidateLifetime = true,
+                        ClockSkew = TimeSpan.Zero
+                    };
+                }
+                );
+
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
