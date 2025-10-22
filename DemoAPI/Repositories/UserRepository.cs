@@ -17,26 +17,38 @@ namespace DemoAPI.Repositories
             _context.SaveChanges();
             return user;
         }
-        public IEnumerable<User> GetAllUsers()
-        {
-            return _context.Users.ToList();
-        }
-
         public bool DeleteUser(int id)
         {
-            throw new NotImplementedException();
+            var user = _context.Users.FirstOrDefault(u =>
+            u.Id == id);
+            if (user != null)
+            {
+                _context.Users.Remove(user);
+                _context.SaveChanges();
+                return true;
+            }
+            else return false;
+
         }
-
-        
-
         public User GetUserById(int id)
         {
-            throw new NotImplementedException();
+            var user = _context.Users.FirstOrDefault(u =>
+            u.Id == id);
+            if (user != null)
+                return user;
+            else return null;
         }
-
         public User UpdateUser(int id, User user)
         {
-            throw new NotImplementedException();
+            var userr = _context.Users.FirstOrDefault(u =>
+            u.Id == id);
+            if (userr != null)
+            {
+                _context.Users.Update(user);
+                _context.SaveChanges();
+            }
+            return user;
         }
+            
     }
 }
