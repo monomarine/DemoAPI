@@ -17,11 +17,11 @@ namespace DemoAPI.Controllers
             _repo = repo;
         }
      
-        [HttpGet]
-        public ActionResult<IEnumerable<User>> Get()
-        {
-            return Ok(_repo.GetAllUsers());
-        }
+        //[HttpGet]
+        //public ActionResult<IEnumerable<User>> Get()
+        //{
+        //  //  return Ok(_repo.GetAllUsers());
+        //}
         [HttpGet("{id}")]
         public ActionResult<User> GetUser(int id)
         {
