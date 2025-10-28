@@ -27,6 +27,13 @@ namespace DemoAPI.Services
             try
             {
                 var user = _userRepository.ExistUser(loginRequest.LoginOrEmail);
+                if (user == null)
+                    return new AuthResponse
+                    {
+                        Success = false,
+                        ErrorMessage = "Такого пользователя не существует"
+                    };
+
                 if (user.PasswordHash != GetHashPassword(loginRequest.Password))
                     return new AuthResponse
                     {
@@ -71,7 +78,60 @@ namespace DemoAPI.Services
 
         public AuthResponse Register(CreateUserRequest createUserRequest)
         {
-            throw new NotImplementedException();
+            try
+            {
+
+
+                var user1 = _userRepository.ExistUser(createUserRequest.Email);
+                var user2 = _userRepository.ExistUser(createUserRequest.Login);
+
+                if (user1 != null || user2 != null)
+                {
+                    return new AuthResponse
+                    {
+                        Success = false,
+                        ErrorMessage = "Такой пользователь уже существует"
+                    };
+                }
+                else
+                {
+                    User newUser = new User
+                    {
+                        Login = createUserRequest.Login,
+                        Email = createUserRequest.Email,
+                        PasswordHash = GetHashPassword(createUserRequest.Password),
+                        CreatedAt = DateTime.UtcNow,
+                        IsActive = true
+                    };
+
+                    var addedUser = _userRepository.AddUser(newUser);
+
+                    return new AuthResponse
+                    {
+                        Success = true,
+                        Token = GenerateJwtToken(addedUser),
+                        RefreshToken = GenerateRefreshToken(),
+                        ValidTo = DateTime.UtcNow
+                            .AddMinutes(_jwtSett.ExpirateAtInMinutes),
+                        User = new UserDTO
+                        {
+                            Id = addedUser.Id,
+                            Login = addedUser.Login,
+                            Email = addedUser.Email
+                        }
+                    };
+
+                }
+            }
+            catch(Exception ex)
+            {
+                return new AuthResponse
+                {
+                    Success = false,
+                    ErrorMessage = ex.Message
+                };
+            }
+
         }
 
         public bool ValidateToken(string token)

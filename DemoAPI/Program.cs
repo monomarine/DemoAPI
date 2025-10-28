@@ -64,6 +64,8 @@ namespace DemoAPI
             builder.Services.AddScoped<IBookRepository, BookRepository>();
             builder.Services.AddScoped<IAuthorRepository, AuthorRepository>();
             builder.Services.AddScoped<IBookService, BookService>();
+            builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddEndpointsApiExplorer();
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -79,6 +81,7 @@ namespace DemoAPI
 
             app.UseMiddleware<TestMiddleware>(); //внедрение польз middleware в конвейер запросов
             app.MapControllers();
+
 
             app.Run();
         }

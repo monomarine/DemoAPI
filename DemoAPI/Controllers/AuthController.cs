@@ -18,7 +18,7 @@ namespace DemoAPI.Controllers
             _service = service;
         }
 
-        [HttpPost]
+        [HttpPost("Login")]
         public ActionResult<AuthResponse> Login([FromBody] LoginRequest loginRequest)
         {
             try
@@ -69,6 +69,41 @@ namespace DemoAPI.Controllers
                     ErrorMessage = "непредвиденная ошибка",
                     Success = false
                 });
+            }
+        }
+
+        [HttpPost("Register")]
+        public ActionResult<AuthResponse> Register([FromBody] CreateUserRequest request)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(
+                        new AuthResponse
+                        {
+                            Success = false,
+                            ErrorMessage = "входные данные некорректны"
+                        });
+                }
+                _logger.LogWarning("пользователь {username} не прошел аутентификацию. данные не корректны", request.Login);
+
+                var result = _service.Register(request);
+                if(!result.Success)
+                {
+                    return Unauthorized(result);
+                }
+
+                return Ok(result);
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(
+                    new AuthResponse
+                    {
+                        Success = false,
+                        ErrorMessage = ex.Message
+                    });
             }
         }
     }

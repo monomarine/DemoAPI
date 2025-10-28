@@ -37,9 +37,7 @@ namespace DemoAPI.Repositories
             u.Login == loginOrEmail ||
             u.Email == loginOrEmail);
 
-            if (user != null)
-                return user;
-            else throw new NullReferenceException("Пользователь не найден");
+            return user;
         }
 
         public User GetUserById(int id)
