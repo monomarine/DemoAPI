@@ -136,7 +136,26 @@ namespace DemoAPI.Services
 
         public bool ValidateToken(string token)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var key = Encoding.ASCII.GetBytes(_jwtSett.SecretKey);
+
+                tokenHandler.ValidateToken(token, new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidateIssuer = true,
+                    ValidIssuer = _jwtSett.Issuer,
+                    ValidateAudience = true,
+                    ValidAudience = _jwtSett.Audience,
+                    ValidateLifetime = true,
+                    ClockSkew = TimeSpan.Zero
+                }, out SecurityToken validatedToken);
+
+                return validatedToken != null;
+            }
+            catch (Exception ex) { return false; }
         }
 
         private string GenerateJwtToken(User user)
