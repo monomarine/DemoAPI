@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace DemoAPI.Controllers
 {
 
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "User")]
     [Route("api/[controller]")]
     [ApiController]
     public class ConfigController : ControllerBase

@@ -1,5 +1,6 @@
 ﻿using DemoAPI.Models.DTO;
 using DemoAPI.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Runtime.CompilerServices;
@@ -15,10 +16,12 @@ namespace DemoAPI.Controllers
         {
             _service = service;
         }
+        [Authorize(Roles ="User")]
         [HttpGet]
         public ActionResult<IEnumerable<BookDTO>> GetAll() =>
             Ok(_service.GetAllbooks().ToList());
 
+        [Authorize(Roles = "User")]
         [HttpGet("{id}")]
         public ActionResult<BookDTO> GetById(int id)
         {
@@ -26,6 +29,7 @@ namespace DemoAPI.Controllers
             if (book == null) return NotFound();
             return Ok(book);
         }
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public ActionResult<BookDTO> CreateBook([FromBody] CreateBookDTO createBookDTO)
         {
@@ -39,7 +43,7 @@ namespace DemoAPI.Controllers
                 return BadRequest(ex.Message);
             }
         }
-
+        [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
         public ActionResult<BookDTO> Update(int id,[FromBody] UpdateBookDTO updateBookDTO)
         {
@@ -54,6 +58,7 @@ namespace DemoAPI.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public ActionResult Delete(int id)
         {

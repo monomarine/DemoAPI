@@ -1,8 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using DemoAPI.Repositories;
-using DemoAPI.Models;
+﻿using DemoAPI.Models;
 using DemoAPI.Models.DTO;
+using DemoAPI.Repositories;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using System.Reflection.Metadata.Ecma335;
 
 namespace DemoAPI.Controllers
@@ -25,7 +26,7 @@ namespace DemoAPI.Controllers
                 Alias = author.Alias,
             };
         }
-
+        [Authorize(Roles = "User")]
         [HttpGet]
         public ActionResult<IEnumerable<AuthorDTO>> GetAuthors()
         {
@@ -33,7 +34,7 @@ namespace DemoAPI.Controllers
             var authorsDTO = authors.Select(MapAuthorDTO);
             return Ok(authorsDTO);
         }
-
+        [Authorize(Roles = "User")]
         [HttpGet("{id}")]
         public ActionResult<AuthorDTO> GetAuthorById(int id)
         {
@@ -42,7 +43,7 @@ namespace DemoAPI.Controllers
 
             return Ok(MapAuthorDTO(author));
         }
-
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public ActionResult<AuthorDTO> Create([FromBody] CreateAuthorDTO createAuthorDTO)
         {
@@ -56,7 +57,7 @@ namespace DemoAPI.Controllers
 
             return CreatedAtAction(nameof(GetAuthorById), new { id = createdAuthor.Id }, MapAuthorDTO(createdAuthor));
         }
-
+        [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
         public ActionResult<AuthorDTO> Update(int id, [FromBody] CreateAuthorDTO updateAuthorDTO)
         {
@@ -71,7 +72,7 @@ namespace DemoAPI.Controllers
 
             return Ok(MapAuthorDTO(updatedAuthor));
         }
-
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public ActionResult Delete(int id)
         {

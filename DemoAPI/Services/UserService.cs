@@ -14,12 +14,13 @@ namespace DemoAPI.Services
     {
         private readonly JwtConfiguration _jwtSett;
         private readonly IUserRepository _userRepository;
-
+        private readonly ILogger<UserService> _logger;
         public UserService(IOptions<JwtConfiguration> jwtConf,
-            IUserRepository userRepo)
+            IUserRepository userRepo, ILogger<UserService> logger)
         {
             _jwtSett = jwtConf.Value;
             _userRepository = userRepo;
+            _logger = logger;
         }
 
         public AuthResponse Login(LoginRequest loginRequest)
@@ -27,6 +28,16 @@ namespace DemoAPI.Services
             try
             {
                 var user = _userRepository.ExistUser(loginRequest.LoginOrEmail);
+
+                var role = _userRepository.RoleExist(loginRequest.RoleId);
+                if(role == null)
+                {
+                    return new AuthResponse
+                    {
+                        Success = false,
+                        ErrorMessage = "такой роли не существует или она не соответвует"
+                    };
+                }
                 if (user == null)
                     return new AuthResponse
                     {
@@ -56,7 +67,9 @@ namespace DemoAPI.Services
                         {
                             Id = user.Id,
                             Login = user.Login,
-                            Email = user.Email
+                            Email = user.Email,
+                            RoleName = user.Role.Name
+
                         }
                     };
                 }
@@ -80,7 +93,9 @@ namespace DemoAPI.Services
         {
             try
             {
-
+                var role = _userRepository.RoleExist(createUserRequest.RoleId);
+                if (role == null)
+                    throw new ArgumentException("роль с таким id не существует");
 
                 var user1 = _userRepository.ExistUser(createUserRequest.Email);
                 var user2 = _userRepository.ExistUser(createUserRequest.Login);
@@ -101,7 +116,8 @@ namespace DemoAPI.Services
                         Email = createUserRequest.Email,
                         PasswordHash = GetHashPassword(createUserRequest.Password),
                         CreatedAt = DateTime.UtcNow,
-                        IsActive = true
+                        IsActive = true,
+                        RoleId = createUserRequest.RoleId
                     };
 
                     var addedUser = _userRepository.AddUser(newUser);
@@ -117,7 +133,8 @@ namespace DemoAPI.Services
                         {
                             Id = addedUser.Id,
                             Login = addedUser.Login,
-                            Email = addedUser.Email
+                            Email = addedUser.Email,
+                            RoleName = addedUser.Role.Name
                         }
                     };
 
@@ -168,7 +185,9 @@ namespace DemoAPI.Services
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Name, user.Login),
-                new Claim(ClaimTypes.Email, user.Email)
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.Role, user.Role?.Name)
+
             };
 
             var tokenDescriptor = new SecurityTokenDescriptor
@@ -183,6 +202,8 @@ namespace DemoAPI.Services
                                 )
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
+            _logger.LogWarning(user.Role.Name);
+
             return tokenHandler.WriteToken(token);
 
         }

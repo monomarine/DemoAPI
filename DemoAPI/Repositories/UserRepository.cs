@@ -33,7 +33,9 @@ namespace DemoAPI.Repositories
 
         public User ExistUser(string loginOrEmail)
         {
-            var user = _context.Users.FirstOrDefault(u =>
+            var user = _context.Users
+                .Include(u => u.Role)
+                .FirstOrDefault(u =>
             u.Login == loginOrEmail ||
             u.Email == loginOrEmail);
 
@@ -48,6 +50,12 @@ namespace DemoAPI.Repositories
                 return user;
             else return null;
         }
+
+        public Role? RoleExist(int id)
+        {
+            return _context.Roles.FirstOrDefault(u => u.Id == id);
+        }
+
         public User UpdateUser(int id, User user)
         {
             var userr = _context.Users.FirstOrDefault(u =>

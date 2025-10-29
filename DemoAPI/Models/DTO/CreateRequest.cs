@@ -13,5 +13,6 @@ namespace DemoAPI.Models.DTO
         [Required]
         [MinLength(8)]
         public string Password { get; set; } = null!;
+        public int RoleId { get; set; } = 2; 
     }
 }
