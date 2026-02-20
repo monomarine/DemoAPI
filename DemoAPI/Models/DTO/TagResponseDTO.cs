@@ -1,4 +1,5 @@
-﻿namespace DemoAPI.Models.DTO
+﻿using System.ComponentModel.DataAnnotations;
+namespace DemoAPI.Models.DTO
 {
     public class TagResponseDTO
     {
